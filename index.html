@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI面试机器人 · 补充人才画像 | PRD文档</title>
+    <!-- 外部CSS & JS 分离 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome 6 (CDN 外部资源，正常使用) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <!-- 顶部栏：返回按钮 -->
+    <div class="top-bar">
+        <a href="#" class="back-home" id="backButton">
+            <i class="fas fa-arrow-left"></i> 返回作品集
+        </a>
+        <div class="version-badge">
+            <i class="fas fa-file-alt"></i> 需求文档 · v1.0
+        </div>
+    </div>
+
+    <!-- 主卡片内容 -->
+    <div class="glass-card">
+        <div class="doc-header">
+            <h1><i class="fas fa-robot" style="color: #ffde9c; margin-right: 10px;"></i> AI面试（补充人才画像）机器人</h1>
+            <div class="sub">
+                <span><i class="far fa-calendar-alt"></i> 产品需求文档</span>
+                <span class="badge-version"><i class="fas fa-tag"></i> 增量画像 · 动态追问</span>
+                <span><i class="fas fa-database"></i> 人才画像增强模块</span>
+            </div>
+        </div>
+
+        <!-- 1. 需求背景 -->
+        <h2><i class="fas fa-cloud-upload-alt"></i> 1. 需求背景</h2>
+        <div class="section-card">
+            <p><strong>功能背景</strong><br>虽然有AI解析简历，但是简历内容不全面，无法全方位了解人才画像，没有结构化行为特征，有些简历项目描述模糊：比如一段经历同样是“参与xx项目”但决策者和边缘执行者不应放在同一纬度比较，检索维度单一，导致后续检索时无法按“主动性”进行软素质筛选。本功能旨在通过AI面试对话机器人，追问简历缺失的画像维度，输出增量标签，并且根据简历深层次提问简历项目，确定简历中项目究竟是边缘角色还是主要角色，标签化后，提升后续人才库的可检索性。</p>
+        </div>
+
+        <h3><i class="fas fa-chart-line"></i> 目标与衡量指标</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr><th>目标</th><th>衡量指标</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>为每个候选人按照简历缺失程度补充画像字段</td><td>按照结构化输出完整画像字段 ≥95%</td></tr>
+                    <tr><td>面试中不重复简历已有信息</td><td>人工抽检100条对话，要求命中率为0</td></tr>
+                    <tr><td>判断真实项目贡献（根据简历项目提问细节，简历可以经过无数次修改，但临场发挥的逻辑更表现真实水平）</td><td>成功输出“主导/参与/边缘”三级标签</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. 用户与场景 -->
+        <h2><i class="fas fa-users"></i> 2. 用户与场景</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>用户角色</th><th>使用场景</th><th>触发动作</th></tr></thead>
+                <tbody>
+                    <tr><td>候选人</td><td>收到人才库补充画像的邀请</td><td>邮件/短信点击链接 → 完成对话</td></tr>
+                    <tr><td>HR/系统</td><td>按照软素质多维度/标签搜索候选人</td><td>进入界面勾选标签或者能力搜索</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3. 功能范围 In/Out -->
+        <h2><i class="fas fa-cogs"></i> 3. 功能范围</h2>
+        <div class="section-card" style="display: flex; flex-wrap: wrap; gap: 2rem;">
+            <div style="flex:1;">
+                <strong class="highlight-text">✅ In（本功能负责）</strong>
+                <ul>
+                    <li>接收候选人简历的json解析结果</li>
+                    <li>自动识别简历中缺失的结构化画像维度</li>
+                    <li>动态生成对话问题</li>
+                    <li>实时根据候选人回答触发追问</li>
+                    <li>每轮至少输出一个画像字段</li>
+                    <li>最终输出一个json格式的增量画像，写入人才库</li>
+                </ul>
+            </div>
+            <div style="flex:1;">
+                <strong class="highlight-text">❌ Out（不负责）</strong>
+                <ul>
+                    <li>不负责发送面试邀请，由上层调动</li>
+                    <li>不负责维护题库，可以有固定题库但题库的更新不由本功能负责</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 4. 用户流程 (原图片说明) -->
+        <h2><i class="fas fa-project-diagram"></i> 4. 用户流程</h2>
+        <div class="info-note">
+            <i class="fas fa-image"></i> 流程图示意：<br>
+            候选人收到邀请 → 进入对话 → 接收简历JSON → 缺失字段识别 → 动态提问(6轮引擎) → 输出增量标签 → 写入人才库。具体流程详见下方“功能详细说明”的6轮对话逻辑。
+        </div>
+
+        <!-- 5. 功能详细说明 (核心轮次表格) -->
+        <h2><i class="fas fa-comments"></i> 5. 功能详细说明</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>轮次</th><th>触发条件</th><th>问题生成逻辑</th><th>追问条件</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1（硬性指标补全）</td><td>简历中缺失的结构化中的硬性字段（如英语等级、日语等级、特定证书）且在该岗位配置中被标记为必问。</td><td>系统读取解析简历的json，和结构画像进行匹配，对缺失字段进行提问。</td><td>回答模糊，比如提问英语等级，回答“英文还不错，口语能对话”。</td></tr>
+                    <tr><td>2（项目角色真实性验证）</td><td>项目中有“主导”等明确项目主要地位用词</td><td>生成项目的追问，比如：您当时主要职责是什么？请用一两句说明您具体完成了哪些工作。</td><td>若使用模糊化用词“参与”“协助”“负责整体”，“我们”则跳转到3（项目角色深度）字数＜10触发二次追问。</td></tr>
+                    <tr><td>3（项目角色深度）</td><td>项目中有“负责”“我们”“协助”等模糊化地位词语</td><td>主要围绕模糊化词语的地方进行追问，比如您负责xx项目，您的主要贡献是什么？</td><td>若逻辑出现“协调部门”等问题可以提出“所以您主要是协调性工作？”字数＜10触发二次追问。</td></tr>
+                    <tr><td>4（目标岗位与技能偏差）</td><td>项目经验和目标岗位标签是否不匹配，比如开发岗项目内容是运维</td><td>提问为什么之前干的运维想要来开发岗。</td><td>回复“我想试试”等空泛词语，追问是否为了这个开发岗准备了什么技能和自己开发了什么项目。</td></tr>
+                    <tr><td>5（语言组织/逻辑能力测试）</td><td>始终触发</td><td>描述您最近解决的一个技术性难题。</td><td>无量化结果和没有按照star法则描述，语言无逻辑抓不到重点，则提示候选人有条理的重新回答，给候选人二次机会。</td></tr>
+                    <tr><td>6（岗位特殊要求测试）</td><td>按需触发</td><td>我们岗位是运维岗，需要7X24小时是否能接受？；我们这个岗位是急招，需要三天内到岗是否能接受？</td><td>词义匹配不追问，记录结束。</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 兜底策略与异常处理 -->
+        <h3><i class="fas fa-shield-alt"></i> 兜底策略与异常处理（通用）</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>异常情况</th><th>判定条件</th><th>兜底动作</th></tr></thead>
+                <tbody>
+                    <tr><td>回答过短</td><td>字数 < 5 字</td><td>追问：“您能再具体一点吗？一句话即可。”</td></tr>
+                    <tr><td>明显答非所问</td><td>语义相似度 < 0.3（与问题主题无关）</td><td>重新表述问题：“可能我没说清楚，我想问的是......”</td></tr>
+                    <tr><td>连续2次无效</td><td>同一轮触发两次兜底仍无效</td><td>跳过该维度，记录“未采集/不符合”，进入下一轮</td></tr>
+                    <tr><td>超时无输入</td><td>单题等待 > 120 秒</td><td>提示：“您是否还在线？”再等10秒无响应则结束会话</td></tr>
+                    <tr><td>检测到格式化输出（AI生成意见）</td><td>同时满足多项：①典型AI句式（首先...其次...最后/综上所述）；②无第一人称“我”的具体行动；③内容与简历脱节；④回答时间极短但内容很长（<3秒输入超100字）；⑤语义流畅但无个人化细节。</td><td>不打断，如果全部满足则标记为高AI生成，满足1-2项标记为低可信度AI生成，追问带个人经历问题，生成响应的标签（高AI/低AI）。</td></tr>
+                    <tr><td>超时未输入、突然离线短线</td><td>超过120s未输入</td><td>记录已有信息json，下次候选人进入继续进度问答。</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 6. 数据字段建议 -->
+        <h2><i class="fas fa-database"></i> 6. 数据字段建议</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>字段名</th><th>类型</th><th>必填</th><th>说明</th><th>示例</th></tr></thead>
+                <tbody>
+                    <tr><td>candidate_id</td><td>string</td><td>是</td><td>候选人唯一标识</td><td>C12345</td></tr>
+                    <tr><td>session_id</td><td>string</td><td>是</td><td>本次面试会话 ID</td><td>S202605120001</td></tr>
+                    <tr><td>session_incomplete</td><td>boolean</td><td>否</td><td>是否因超时等原因提前终止</td><td>false</td></tr>
+                    <tr><td>hard_skills.english_level</td><td>string</td><td>否</td><td>英语等级</td><td>CET-6</td></tr>
+                    <tr><td>hard_skills.japanese_level</td><td>string</td><td>否</td><td>日语等级</td><td>N2</td></tr>
+                    <tr><td>hard_skills.other_cert</td><td>string</td><td>否</td><td>其它证书（可扩展）</td><td>PMP</td></tr>
+                    <tr><td>project_role_depth.claimed</td><td>string</td><td>是</td><td>候选人对自身角色的描述原文摘要</td><td>负责核心模块开发</td></tr>
+                    <tr><td>project_role_depth.evidence</td><td>string</td><td>否</td><td>候选人提供的具体决策或细节证据</td><td>推动将单机缓存改为Redis集群</td></tr>
+                    <tr><td>project_role_depth.credibility_score</td><td>integer (1-5)</td><td>是</td><td>基于证据充分性的可信度评分，5最高</td><td>4</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 7. 验收标准 -->
+        <h2><i class="fas fa-check-circle"></i> 7. 验收标准</h2>
+        <div class="section-card">
+            <p><strong>功能验收：</strong></p>
+            <ul>
+                <li><strong>AC-01：</strong>系统层面正常解析发送简历和生成对应问答，第一轮中必问缺失的硬性指标，且不重复问简历中已有的技能，年限，公司等。</li>
+                <li><strong>AC-02：</strong>追问必须符合要求，不允许生成无关追问，轮次符合要求，可多轮。</li>
+                <li><strong>AC-03：</strong>至少预设的六轮全部覆盖。</li>
+            </ul>
+            <p><strong>异常处理验收：</strong></p>
+            <ul>
+                <li><strong>AC-04：</strong>测试候选人回复无关问题答非所问的时候能够及时追问，并且记录。</li>
+                <li><strong>AC-05：</strong>单轮两次无效问答后能系统记录字段跳到下一轮。</li>
+                <li><strong>AC-06：</strong>输入超时（120秒后）系统及时追问，在等待一个规定时间如（15s）后自动终结会话，记录已有信息，下次从这一步中断开始。</li>
+                <li><strong>AC-07：</strong>所有输出的字段能稳定输出json，并且能准确写入数据库，且原有简历不会被覆盖。</li>
+            </ul>
+        </div>
+
+        <!-- 附加说明：文档完整性校验 -->
+        <div class="info-note" style="margin-top: 2rem;">
+            <i class="fas fa-code-branch"></i> 输出产物：最终生成增量画像JSON，写入人才库，增强多维检索能力（主动性、贡献度等软素质标签）。
+        </div>
+    </div>
+</div>
+</body>
+</html>
